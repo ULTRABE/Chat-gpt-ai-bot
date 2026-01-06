@@ -17,17 +17,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if now - LAST_REPLY < COOLDOWN:
         return
 
-    if update.message is None:
+    if not update.message or not update.message.text:
         return
 
     text = update.message.text
-    if not text:
-        return
 
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "Reply like a normal human, short and casual."},
+            {"role": "system", "content": "Reply like a real human. Casual, short."},
             {"role": "user", "content": text}
         ]
     )
@@ -37,6 +35,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     LAST_REPLY = now
+
 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
